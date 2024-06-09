@@ -34,7 +34,7 @@ public class ProductControl extends HttpServlet {
 		super();
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) //tentativo id-3
 			throws ServletException, IOException {
 
 		if (request.getParameter("action") != null && request.getParameter("action").compareTo("dettaglio") == 0) {
