@@ -113,6 +113,7 @@ public class ProductModel {
 		}
 		return (result != 0);
 	}
+	
 	public synchronized Collection<ProductBean> doRetrieveAll(String where) throws SQLException {
 		Connection connection = null;
 		Connection connection2 = null;
@@ -121,12 +122,13 @@ public class ProductModel {
 
 		Collection<ProductBean> products = new LinkedList<ProductBean>();
 
-		String selectSQL = "SELECT * FROM " + ProductModel.TABLE_NAME + " WHERE deleted = 'false' AND nomeTipologia = '" + where + "'";
+		String selectSQL = "SELECT * FROM " + ProductModel.TABLE_NAME + " WHERE deleted = 'false' AND nomeTipologia = ?";
 		String sql2 = "SELECT AVG(votazione) FROM Recensione WHERE codiceProdotto = ?";
 		
 		try {
 			connection = DriverManagerConnectionPool.getConnection();
 			preparedStatement = connection.prepareStatement(selectSQL);
+			preparedStatement.setString(1, where);
 
 			ResultSet rs = preparedStatement.executeQuery();
 
@@ -161,11 +163,16 @@ public class ProductModel {
 				if (preparedStatement != null)
 					preparedStatement.close();
 			} finally {
-				if (connection2 != null) {
-					DriverManagerConnectionPool.releaseConnection(connection2);
-				}
-				if (connection != null) {
-					DriverManagerConnectionPool.releaseConnection(connection);
+				try {
+					if (preparedStatement2 != null)
+						preparedStatement2.close();
+				} finally {
+					if (connection2 != null) {
+						DriverManagerConnectionPool.releaseConnection(connection2);
+					}
+					if (connection != null) {
+						DriverManagerConnectionPool.releaseConnection(connection);
+					}
 				}
 			}
 		}
